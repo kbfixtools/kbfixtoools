@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Resize Tool</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+.box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    text-align: center;
+    width: 500px;
+}
+input[type="number"] {
+    width: 80px;
+    margin: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+input[type="file"] {
+    margin-bottom: 20px;
+}
+.controls {
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+}
+button, .download-btn {
+    padding: 10px 20px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+}
+.download-btn {
+    background: #28a745;
+    margin-top: 20px;
+}
+canvas {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    max-width: 100%;
+    display: none; /* রিসাইজ করার আগে হাইড থাকবে */
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Image Resize Tool</h2>
+
+    <input type="file" id="file" accept="image/*"><br>
+
+    <div class="controls">
+        <label>
+            <input type="checkbox" id="keepRatio" checked> 
+            <strong>Maintain Aspect Ratio</strong>
+        </label><br><br>
+        
+        Width: <input type="number" id="width"> px
+        &nbsp;&nbsp;
+        Height: <input type="number" id="height"> px
+    </div>
+
+    <button onclick="resizeImage()">Resize Image</button>
+
+    <br>
+    <canvas id="canvas"></canvas>
+    <br>
+
+    <a id="download" class="download-btn" download="resized-image.png" style="display: none;">Download Image</a>
+
+</div>
+
+<script>
+const fileInput = document.getElementById("file");
+const widthInput = document.getElementById("width");
+const heightInput = document.getElementById("height");
+const keepRatio = document.getElementById("keepRatio");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const downloadLink = document.getElementById("download");
+
+let originalRatio = 1;
+let img = new Image();
+
+// ১. ছবি সিলেক্ট করলে অরিজিনাল সাইজ ইনপুট বক্সে দেখাবে
+fileInput.addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        img.onload = function() {
+            widthInput.value = img.width;
+            heightInput.value = img.height;
+            originalRatio = img.width / img.height;
+            
+            // নতুন ছবি দিলে আগের ক্যানভাস ও ডাউনলোড বাটন হাইড করে দেওয়া হবে
+            canvas.style.display = "none";
+            downloadLink.style.display = "none";
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+});
+
+// ২. Width পরিবর্তন করলে Height অটোমেটিক চেঞ্জ হবে
+widthInput.addEventListener("input", function() {
+    if (keepRatio.checked && widthInput.value) {
+        heightInput.value = Math.round(widthInput.value / originalRatio);
+    }
+});
+
+// ৩. Height পরিবর্তন করলে Width অটোমেটিক চেঞ্জ হবে
+heightInput.addEventListener("input", function() {
+    if (keepRatio.checked && heightInput.value) {
+        widthInput.value = Math.round(heightInput.value * originalRatio);
+    }
+});
+
+// ৪. রিসাইজ ফাংশন
+function resizeImage() {
+    if (!img.src) {
+        alert("Please select an image first!");
+        return;
+    }
+
+    const w = Number(widthInput.value);
+    const h = Number(heightInput.value);
+
+    if (w <= 0 || h <= 0) {
+        alert("Width and Height must be greater than 0");
+        return;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+
+    canvas.style.display = "block"; // ক্যানভাস শো করানো
+    downloadLink.style.display = "inline-block"; // ডাউনলোড বাটন শো করানো
+    downloadLink.href = canvas.toDataURL("image/png"); // ডাউনলোড লিংক সেট করা
+}
+</script>
+
+</body>
+</html>
