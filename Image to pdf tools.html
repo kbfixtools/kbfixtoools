@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KB-FixTools — Image Tools Suite</title>
+
+    <!-- Font Awesome 6 (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- jsPDF (CDN) for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <!-- ========== NAVIGATION ========== -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo" id="logoLink">
+                <i class="fas fa-wrench"></i>
+                <span>KB-FixTools</span>
+            </a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" data-page="home" class="active">Home</a></li>
+                <li><a href="#" data-page="imagetopdf">Image to PDF</a></li>
+                <li><a href="#" data-page="compress">Compressor</a></li>
+                <li><a href="#" data-page="resize">Resizer</a></li>
+                <li><a href="#" data-page="jpgtopng">JPG → PNG</a></li>
+                <li><a href="#" data-page="pngtojpg">PNG → JPG</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== PAGE WRAPPER ========== -->
+    <main class="page-wrapper">
+
+        <!-- ===== HOME PAGE ===== -->
+        <section class="page" id="page-home">
+            <div class="container">
+                <div class="hero">
+                    <h1>Fix, Convert &amp; Optimize<br />Your Images Instantly</h1>
+                    <p class="hero-sub">
+                        A complete suite of free, browser‑based image tools.
+                        No uploads to servers — everything runs locally on your device.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#" class="btn btn-primary" data-page="imagetopdf">
+                            <i class="fas fa-arrow-right"></i> Get Started
+                        </a>
+                        <span class="hero-badge"><i class="fas fa-shield-alt"></i> 100% Private</span>
+                    </div>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card" data-page="imagetopdf">
+                        <div class="tool-icon"><i class="fas fa-file-pdf"></i></div>
+                        <h3>Image to PDF</h3>
+                        <p>Combine one or more images into a single PDF.</p>
+                        <span class="tool-tag">Popular</span>
+                    </div>
+                    <div class="tool-card" data-page="compress">
+                        <div class="tool-icon"><i class="fas fa-compress-alt"></i></div>
+                        <h3>Image Compressor</h3>
+                        <p>Reduce file size without losing quality.</p>
+                    </div>
+                    <div class="tool-card" data-page="resize">
+                        <div class="tool-icon"><i class="fas fa-expand"></i></div>
+                        <h3>Image Resizer</h3>
+                        <p>Change dimensions with aspect‑ratio lock.</p>
+                    </div>
+                    <div class="tool-card" data-page="jpgtopng">
+                        <div class="tool-icon"><i class="fas fa-exchange-alt"></i></div>
+                        <h3>JPG to PNG</h3>
+                        <p>Convert JPG to PNG with transparency support.</p>
+                    </div>
+                    <div class="tool-card" data-page="pngtojpg">
+                        <div class="tool-icon"><i class="fas fa-exchange-alt"></i></div>
+                        <h3>PNG to JPG</h3>
+                        <p>Convert PNG to JPG for smaller file sizes.</p>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-lock"></i>
+                        <h4>Private &amp; Secure</h4>
+                        <p>All processing is done in your browser. Nothing is uploaded.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <h4>Lightning Fast</h4>
+                        <p>Optimized for speed with zero server latency.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-moon"></i>
+                        <h4>Dark Mode</h4>
+                        <p>Easy on the eyes. Toggle between light and dark themes.</p>
+                    </div>
+                </div>
+
+                <footer class="site-footer">
+                    <p>&copy; 2026 KB-FixTools — Built with ❤️ using vanilla JS</p>
+                </footer>
+            </div>
+        </section>
+
+        <!-- ===== TOOL: IMAGE TO PDF (ENHANCED) ===== -->
+        <section class="page tool-page" id="page-imagetopdf" style="display:none;">
+            <div class="container">
+                <div class="tool-header">
+                    <button class="back-btn" data-page="home"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h2><i class="fas fa-file-pdf"></i> Image to PDF</h2>
+                    <p>Upload one or more images and combine them into a single PDF. Drag to reorder.</p>
+                </div>
+                <div class="tool-body">
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="pdfUploadZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p><strong>Drop images here</strong> or click to browse</p>
+                        <span>Supports JPG, PNG, WebP, BMP</span>
+                        <input type="file" id="pdfFileInput" multiple accept="image/*" />
+                    </div>
+
+                    <!-- Preview List -->
+                    <div class="pdf-preview-list" id="pdfPreviewList"></div>
+
+                    <!-- Controls Row 1: Layout -->
+                    <div class="tool-controls-row">
+                        <div class="layout-selector">
+                            <label for="pdfLayout"><i class="fas fa-layer-group"></i> Layout:</label>
+                            <select id="pdfLayout">
+                                <option value="single">1 Photo Per Page</option>
+                                <option value="double">2 Photos Per Page (Vertical)</option>
+                            </select>
+                        </div>
+
+                        <!-- Compression Controls -->
+                        <div class="compression-controls-group">
+                            <!-- Quality Slider -->
+                            <div class="compression-selector">
+                                <label for="pdfQuality"><i class="fas fa-compress-alt"></i> Quality:</label>
+                                <input type="range" id="pdfQuality" min="10" max="100" value="80" />
+                                <span class="quality-label" id="pdfQualityLabel">80%</span>
+                            </div>
+
+                            <!-- Target Size -->
+                            <div class="target-size-selector">
+                                <label for="pdfTargetSize"><i class="fas fa-bullseye"></i> Target:</label>
+                                <input type="number" id="pdfTargetSize" min="50" value="500" step="1" />
+                                <select id="pdfTargetUnit">
+                                    <option value="KB">KB</option>
+                                    <option value="MB" selected>MB</option>
+                                </select>
+                                <button class="btn btn-sm btn-primary" id="pdfOptimizeBtn">
+                                    <i class="fas fa-magic"></i> Optimize
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Size Estimate -->
+                    <div class="size-estimate-bar">
+                        <span>Estimated PDF size: <strong id="pdfSizeEstimate">—</strong></span>
+                        <span class="target-indicator" id="pdfTargetIndicator"></span>
+                    </div>
+
+                    <!-- Controls Row 2: Action Buttons (always clickable) -->
+                    <div class="tool-controls-actions">
+                        <button class="btn btn-outline" id="pdfPreviewBtn">
+                            <i class="fas fa-eye"></i> Preview PDF
+                        </button>
+                        <button class="btn btn-primary" id="pdfGenerateBtn">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </button>
+                        <button class="btn btn-outline" id="pdfDownloadJpgBtn">
+                            <i class="fas fa-images"></i> Download as JPG
+                        </button>
+                        <button class="btn btn-outline" id="pdfClearBtn">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+
+                    <!-- PDF Preview Modal -->
+                    <div class="pdf-preview-modal" id="pdfPreviewModal">
+                        <div class="pdf-preview-modal-content">
+                            <div class="pdf-preview-modal-header">
+                                <h3><i class="fas fa-eye"></i> PDF Preview</h3>
+                                <button class="pdf-preview-close" id="pdfPreviewClose">&times;</button>
+                            </div>
+                            <div class="pdf-preview-modal-body">
+                                <iframe id="pdfPreviewIframe" src=""></iframe>
+                            </div>
+                            <div class="pdf-preview-modal-footer">
+                                <button class="btn btn-primary" id="pdfPreviewDownloadBtn">
+                                    <i class="fas fa-download"></i> Download PDF
+                                </button>
+                                <button class="btn btn-outline" id="pdfPreviewCloseBtn">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TOOL: COMPRESSOR ===== -->
+        <section class="page tool-page" id="page-compress" style="display:none;">
+            <div class="container">
+                <div class="tool-header">
+                    <button class="back-btn" data-page="home"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h2><i class="fas fa-compress-alt"></i> Image Compressor</h2>
+                    <p>Compress your images to reduce file size. Adjust the quality slider.</p>
+                </div>
+                <div class="tool-body">
+                    <div class="compress-layout">
+                        <div class="upload-zone" id="compressUploadZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Drop an image</strong> or click to browse</p>
+                            <span>JPG, PNG, WebP</span>
+                            <input type="file" id="compressFileInput" accept="image/*" />
+                        </div>
+                        <div class="compress-preview-area" id="compressPreviewArea">
+                            <div class="compress-original">
+                                <h4>Original</h4>
+                                <div class="img-wrap"><img id="compressOriginalImg" alt="Original" /></div>
+                                <span class="file-size" id="compressOriginalSize">—</span>
+                            </div>
+                            <div class="compress-compressed">
+                                <h4>Compressed</h4>
+                                <div class="img-wrap"><img id="compressCompressedImg" alt="Compressed" /></div>
+                                <span class="file-size" id="compressCompressedSize">—</span>
+                            </div>
+                        </div>
+                        <div class="compress-controls">
+                            <label for="compressQuality">Quality: <span id="compressQualityLabel">80%</span></label>
+                            <input type="range" id="compressQuality" min="10" max="100" value="80" />
+                            <div class="compress-buttons">
+                                <button class="btn btn-primary" id="compressDownloadBtn" disabled>
+                                    <i class="fas fa-download"></i> Download Compressed
+                                </button>
+                                <button class="btn btn-outline" id="compressClearBtn">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TOOL: RESIZER ===== -->
+        <section class="page tool-page" id="page-resize" style="display:none;">
+            <div class="container">
+                <div class="tool-header">
+                    <button class="back-btn" data-page="home"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h2><i class="fas fa-expand"></i> Image Resizer</h2>
+                    <p>Resize your image to exact dimensions. Lock aspect‑ratio to maintain proportions.</p>
+                </div>
+                <div class="tool-body">
+                    <div class="resize-layout">
+                        <div class="upload-zone" id="resizeUploadZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Drop an image</strong> or click to browse</p>
+                            <span>JPG, PNG, WebP</span>
+                            <input type="file" id="resizeFileInput" accept="image/*" />
+                        </div>
+                        <div class="resize-preview-area">
+                            <div class="img-wrap"><img id="resizePreviewImg" alt="Preview" /></div>
+                            <span class="file-size" id="resizeOriginalSize">—</span>
+                        </div>
+                        <div class="resize-controls">
+                            <div class="resize-dimensions">
+                                <div>
+                                    <label for="resizeWidth">Width (px)</label>
+                                    <input type="number" id="resizeWidth" min="1" value="800" />
+                                </div>
+                                <div>
+                                    <label for="resizeHeight">Height (px)</label>
+                                    <input type="number" id="resizeHeight" min="1" value="600" />
+                                </div>
+                            </div>
+                            <div class="resize-options">
+                                <label><input type="checkbox" id="resizeLockRatio" checked /> Lock aspect ratio</label>
+                            </div>
+                            <button class="btn btn-primary" id="resizeApplyBtn" disabled>
+                                <i class="fas fa-check"></i> Apply Resize
+                            </button>
+                            <button class="btn btn-outline" id="resizeDownloadBtn" disabled>
+                                <i class="fas fa-download"></i> Download Resized
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TOOL: JPG TO PNG ===== -->
+        <section class="page tool-page" id="page-jpgtopng" style="display:none;">
+            <div class="container">
+                <div class="tool-header">
+                    <button class="back-btn" data-page="home"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h2><i class="fas fa-exchange-alt"></i> JPG to PNG</h2>
+                    <p>Convert your JPG images to PNG format. Perfect for transparent backgrounds.</p>
+                </div>
+                <div class="tool-body">
+                    <div class="convert-layout">
+                        <div class="upload-zone" id="jpgtopngUploadZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Drop a JPG image</strong> or click to browse</p>
+                            <span>JPG / JPEG only</span>
+                            <input type="file" id="jpgtopngFileInput" accept=".jpg,.jpeg,image/jpeg" />
+                        </div>
+                        <div class="convert-preview-area">
+                            <div class="convert-original">
+                                <h4>Original (JPG)</h4>
+                                <div class="img-wrap"><img id="jpgtopngOriginalImg" alt="Original" /></div>
+                            </div>
+                            <div class="convert-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="convert-result">
+                                <h4>Result (PNG)</h4>
+                                <div class="img-wrap"><img id="jpgtopngResultImg" alt="Result" /></div>
+                            </div>
+                        </div>
+                        <div class="convert-controls">
+                            <button class="btn btn-primary" id="jpgtopngConvertBtn" disabled>
+                                <i class="fas fa-sync-alt"></i> Convert to PNG
+                            </button>
+                            <button class="btn btn-outline" id="jpgtopngDownloadBtn" disabled>
+                                <i class="fas fa-download"></i> Download PNG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TOOL: PNG TO JPG ===== -->
+        <section class="page tool-page" id="page-pngtojpg" style="display:none;">
+            <div class="container">
+                <div class="tool-header">
+                    <button class="back-btn" data-page="home"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h2><i class="fas fa-exchange-alt"></i> PNG to JPG</h2>
+                    <p>Convert your PNG images to JPG for smaller file sizes and wider compatibility.</p>
+                </div>
+                <div class="tool-body">
+                    <div class="convert-layout">
+                        <div class="upload-zone" id="pngtojpgUploadZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p><strong>Drop a PNG image</strong> or click to browse</p>
+                            <span>PNG only</span>
+                            <input type="file" id="pngtojpgFileInput" accept=".png,image/png" />
+                        </div>
+                        <div class="convert-preview-area">
+                            <div class="convert-original">
+                                <h4>Original (PNG)</h4>
+                                <div class="img-wrap"><img id="pngtojpgOriginalImg" alt="Original" /></div>
+                            </div>
+                            <div class="convert-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="convert-result">
+                                <h4>Result (JPG)</h4>
+                                <div class="img-wrap"><img id="pngtojpgResultImg" alt="Result" /></div>
+                            </div>
+                        </div>
+                        <div class="convert-controls">
+                            <button class="btn btn-primary" id="pngtojpgConvertBtn" disabled>
+                                <i class="fas fa-sync-alt"></i> Convert to JPG
+                            </button>
+                            <button class="btn btn-outline" id="pngtojpgDownloadBtn" disabled>
+                                <i class="fas fa-download"></i> Download JPG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
