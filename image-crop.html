@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Crop Tool</title>
+
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
+
+/* Image container for Cropper */
+.img-container {
+    max-width: 100%;
+    max-height: 500px;
+    margin: 20px auto;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button {
+    padding: 10px 20px;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 10px;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #0b5ed7;
+}
+
+.download-btn {
+    background: #28a745;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.download-btn:hover {
+    background: #218838;
+}
+
+canvas {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    max-width: 100%;
+    display: none; /* ক্রপ করার আগে লুকানো থাকবে */
+}
+
+#cropBtn, #downloadBtn {
+    display: none; /* ছবি আপলোড না হওয়া পর্যন্ত বাটন লুকানো থাকবে */
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Image Crop Tool</h2>
+
+    <input type="file" id="inputImage" accept="image/*">
+
+    <div class="img-container">
+        <img id="image">
+    </div>
+
+    <button id="cropBtn">Crop Image</button>
+
+    <br>
+    <canvas id="result"></canvas>
+    <br>
+
+    <a id="downloadBtn" class="download-btn" download="cropped-image.png">
+        <button>Download</button>
+    </a>
+
+</div>
+
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<script>
+    let cropper;
+    const inputImage = document.getElementById('inputImage');
+    const image = document.getElementById('image');
+    const cropBtn = document.getElementById('cropBtn');
+    const resultCanvas = document.getElementById('result');
+    const ctx = resultCanvas.getContext('2d');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // ১. ছবি সিলেক্ট করলে সেটি লোড করা এবং Cropper.js চালু করা
+    inputImage.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                image.src = event.target.result;
+
+                // যদি আগের কোনো ক্রপার চালু থাকে, তবে সেটি রিমুভ করে নতুন করে চালু করা
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                // Cropper ইনিশিয়ালাইজেশন
+                cropper = new Cropper(image, {
+                    aspectRatio: NaN, // ফ্রি সাইজ ক্রপ করার জন্য (নির্দিষ্ট রেশিও চাইলে এখানে 1, 16/9 ইত্যাদি দিতে পারেন)
+                    viewMode: 1, // ক্রপ বক্স ইমেজের বাইরে যাবে না
+                });
+
+                // বাটনগুলো শো করানো
+                cropBtn.style.display = 'inline-block';
+                resultCanvas.style.display = 'none';
+                downloadBtn.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // ২. Crop বাটনে ক্লিক করলে ছবি ক্রপ করে ক্যানভাসে দেখানো
+    cropBtn.addEventListener('click', function () {
+        if (!cropper) return;
+
+        // ক্রপ করা অংশ ক্যানভাস হিসেবে পাওয়া
+        const croppedCanvas = cropper.getCroppedCanvas();
+
+        // আমাদের resultCanvas-এ সেই ক্রপ করা ক্যানভাসের সাইজ বসানো
+        resultCanvas.width = croppedCanvas.width;
+        resultCanvas.height = croppedCanvas.height;
+
+        // ক্যানভাসে ড্র করা
+        ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+        ctx.drawImage(croppedCanvas, 0, 0);
+
+        // ক্যানভাস এবং ডাউনলোড বাটন শো করানো
+        resultCanvas.style.display = 'block';
+        downloadBtn.style.display = 'inline-block';
+        
+        // ডাউনলোড লিংকে ইমেজ সেট করা
+        downloadBtn.href = resultCanvas.toDataURL("image/png");
+    });
+</script>
+
+</body>
+</html>
